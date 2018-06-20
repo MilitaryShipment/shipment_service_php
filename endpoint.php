@@ -14,20 +14,14 @@ class EndPoint extends API{
     }
     protected function shipment(){
         $data = null;
-        if(!isset($this->verb) && !isset($this->args[0]) && $this->method == 'POST'){ //create
-            $data = new \Movestar\Shipment();
-            $data->setFields($this->request)->create();
-        }elseif(!isset($this->verb) && !isset($this->args[0]) && $this->method == 'GET'){ //get all
-            $data = '';
-        }elseif(!isset($this->verb) &&(int)$this->args[0] && $this->method == 'GET'){ //get by id
-            $data = new \Movestar\Shipment($this->args[0]);
-        }elseif((int)$this->args[0] && $this->method == 'PUT'){ //update by id
-            $data = new \Movestar\Shipment($this->args[0]);
-            $data->setFields($this->file)->update();
-        }elseif(isset($this->verb)){
-            $data = $this->_parseVerb();
+        if($this->method == 'GET' && isset($this->verb)){
+            $data = new \Movestar\Shipment($this->verb);
+        }elseif($this->method == 'GET' && !isset($this->verb)){
+            $data = \Movestar\Shipment::get('Deleted',0);
+        }elseif($this->method == 'POST' && !isset($this->verb)){
+            $data = 'New Shipments will be provided by movestar. You cannot post here';
         }else{
-            throw new \Exception('Malformed Request');
+            throw new \Exception('Unsupported request');
         }
         return $data;
     }

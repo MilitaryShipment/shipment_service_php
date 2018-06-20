@@ -126,4 +126,23 @@ class Shipment extends \Record{
     public function __construct($id = null){
         parent::__construct(self::SUITE,self::DRIVER,self::DB,self::TABLE,self::PRIMARYKEY,$id);
     }
+    public static function get($key,$value){
+        $ids = array();
+        $data = array();
+        $results = $GLOBALS['db']
+            ->suite(self::SUITE)
+            ->driver(self::DRIVER)
+            ->database(self::DB)
+            ->table(self::TABLE)
+            ->select(self::PRIMARYKEY)
+            ->where($key,"=",$value)
+            ->get();
+        while($row = sqlsrv_fetch_array($results,SQLSRV_FETCH_ASSOC)){
+            $ids[] = $row[self::PRIMARYKEY];
+        }
+        foreach($ids as $id){
+            $data[] = new self($id);
+        }
+        return $data;
+    }
 }
